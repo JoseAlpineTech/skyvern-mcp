@@ -102,6 +102,8 @@ class MCPClient:
                     ]
                 })
 
+                print(f"[Tool reply: {content.id} | {result.content[0].text}]")
+
                 # Get next response from Claude
                 response = self.anthropic.messages.create(
                     model="claude-3-5-sonnet-20241022",

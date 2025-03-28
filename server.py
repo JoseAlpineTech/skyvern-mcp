@@ -1,4 +1,5 @@
 import asyncio
+import json
 from typing import Any
 from mcp.server.fastmcp import FastMCP
 
@@ -31,10 +32,21 @@ async def skyvern_v1(user_goal: str, url: str) -> str:
     res = await _skyvern_run_task_v1(user_goal, url)
     return res.model_dump()["extracted_information"]
 
+
+@mcp.tool()
+async def add_two_numbers(a: int, b: int) -> int:
+    """Add two numbers provided by the user
+
+    Args:
+        a: input number
+        b: input number
+    """
+    return a+b
+
 async def main():
     res = await _skyvern_run_task_v1("Go on wikipedia and find out Jaco Pastorius' date of birth", "https://www.wikipedia.com/")
-    print(res.model_dump()["extracted_information"])
+    print("Final answer:", res.model_dump()["extracted_information"])
 
 if __name__ == "__main__":
-    # mcp.run(transport='stdio')
-    asyncio.run(main())
+    mcp.run(transport='stdio')
+    # asyncio.run(main())
