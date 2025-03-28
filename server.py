@@ -1,5 +1,5 @@
+import asyncio
 from typing import Any
-import json
 from mcp.server.fastmcp import FastMCP
 
 from skyvern.agent import SkyvernAgent
@@ -9,9 +9,9 @@ from skyvern.forge.sdk.schemas.task_generations import TaskGenerationBase
 from skyvern.forge.prompts import prompt_engine
 
 mcp = FastMCP("Skyvern")
+skyvern_agent = SkyvernAgent()
 
-async def _skyvern_run_task_v1(user_prompt: str, url: str) -> dict[str, Any] | None:
-    skyvern_agent = SkyvernAgent()
+async def _skyvern_run_task_v1(user_prompt: str, url: str) -> dict[str, Any] | None:        
     llm_prompt = prompt_engine.load_prompt("generate-task", user_prompt=user_prompt)
     llm_response = await app.LLM_API_HANDLER(prompt=llm_prompt, prompt_name="generate-task")
     task_generation = TaskGenerationBase.model_validate(llm_response)
@@ -29,8 +29,12 @@ async def skyvern_v1(user_goal: str, url: str) -> str:
         url: the target website for the user goal
     """
     res = await _skyvern_run_task_v1(user_goal, url)
-    return json.dumps(res)
+    return res.model_dump()["extracted_information"]
 
+async def main():
+    res = await _skyvern_run_task_v1("Go on wikipedia and find out Jaco Pastorius' date of birth", "https://www.wikipedia.com/")
+    print(res.model_dump()["extracted_information"])
 
 if __name__ == "__main__":
-    mcp.run(transport='stdio')
+    # mcp.run(transport='stdio')
+    asyncio.run(main())
